@@ -1,0 +1,53 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+#app {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--pad);
+  min-height: 100vh;
+}
+
+/* Exactly one .screen carries .active at any time. */
+.screen { display: none; }
+.screen.active { display: block; }
+
+button {
+  min-height: var(--tap-target);
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--pad);
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+.muted { color: var(--text-muted); }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          sed -i "s|SUPABASE_URL_PLACEHOLDER|${SUPABASE_URL}|g" js/config.js
+          sed -i "s|SUPABASE_KEY_PLACEHOLDER|${SUPABASE_KEY}|g" js/config.js
+
+      - name: Verify injection
+        run: |
+          FAILED=0
+          for KEY in SUPABASE_URL_PLACEHOLDER SUPABASE_KEY_PLACEHOLDER; do
+            if grep -q "$KEY" js/config.js; then
+              echo "::error::$KEY was not replaced"
+              FAILED=1
+            fi
+          done
+          [ $FAILED -eq 0 ] || exit 1
+
+      - name: Remove development-only files
+        run: rm -rf tests playwright.config.js package.json package-lock.json .github
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

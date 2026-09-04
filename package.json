@@ -1,0 +1,19 @@
+{
+  "name": "budget-coach-v2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Payday planner and daily expense ledger - plan before you spend, know what is safe to spend today",
+  "scripts": {
+    "setup": "playwright install chromium",
+    "serve": "node tests/server.js",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:desktop": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
