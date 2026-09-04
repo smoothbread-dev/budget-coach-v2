@@ -78,6 +78,19 @@ async function submitAuth(event) {
   }
 }
 
+function seedDefaults() {
+  if (Store.all('accounts').length === 0) {
+    SEED_ACCOUNTS.forEach(function (seed) {
+      Store.upsert('accounts', {
+        name: seed.name,
+        type: seed.type,
+        opening_balance: 0,
+        archived: false,
+      }, { queue: false });
+    });
+  }
+}
+
 function renderShell() {
   const signedIn = Auth.isSignedIn();
   document.body.dataset.signedIn = String(signedIn);
@@ -126,6 +139,7 @@ async function boot() {
   await loadLocalConfig();
   Auth.load();
   Store.load();
+  if (Auth.isSignedIn()) seedDefaults();
   initSync();
   initRouter(Auth.isSignedIn() ? 'home-screen' : 'auth-screen');
 
@@ -133,6 +147,11 @@ async function boot() {
   Auth.onChange(() => {
     renderShell();
     if (Auth.isSignedIn()) hydrateInBackground();
+  });
+
+  AccountsScreen.init();
+  Router.onChange(function (id) {
+    if (id === 'accounts-screen') AccountsScreen.render();
   });
 
   document.getElementById('auth-form').addEventListener('submit', submitAuth);
@@ -156,6 +175,11 @@ async function boot() {
     }
   });
 
+  document.getElementById('home-nav').addEventListener('click', (e) => {
+    const target = e.target.closest('[data-screen]');
+    if (target) Router.show(target.dataset.screen);
+  });
+
   setAuthMode('signin');
   renderConfigNotice();
   renderShell();
@@ -167,6 +191,7 @@ async function boot() {
 
 async function hydrateInBackground() {
   const ok = await Sync.hydrate();
+  seedDefaults();
   renderHome();
   document.body.dataset.hydrated = ok ? '1' : 'failed';
   if (ok && Store.dirty.length) Sync.flush();

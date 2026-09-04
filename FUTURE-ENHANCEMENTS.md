@@ -10,48 +10,6 @@ D = the bridge · E = later.
 
 ---
 
-## Chunk 3 — Accounts
-
-**Depends on: Chunk 2 (data layer — shipped).**
-
-Manage the accounts money moves through, and show an accurate running balance for each.
-
-### Behaviour
-
-- Create, rename, archive. Types: Cash, Bank, E-Wallet, Credit Card, Loan.
-- Opening balance per account. For liabilities this is the amount owed.
-- Running balance is **derived from transactions**, never stored:
-  `balance = opening_balance + income − expenses ± transfers`.
-- Seeded on first run with Cash, Bank and E-Wallet so the app is usable immediately.
-- Credit card and loan fields are added in Chunk 8 — this chunk only establishes the types.
-
-### Files
-
-| File | Change |
-|---|---|
-| `js/screens/accounts.js` | New |
-| `js/calc.js` | New — `accountBalance()` |
-| `index.html` | Accounts screen |
-| `css/screens.css` | New |
-| `tests/accounts.spec.js`, `tests/calc.spec.js` | New |
-
-### Spec coverage
-
-- Seeded accounts appear on first run and are not duplicated on second boot
-- Create / rename / archive; archived accounts are hidden but their transactions survive
-- Balance reflects income, expense and transfers in both directions
-- Balance is unaffected by an expense whose `own_share` differs from `amount`
-- Deleting an account with transactions is refused
-
-### Verification
-
-1. Fresh account → three seeded accounts
-2. Add an opening balance, then a few transactions — balance matches hand arithmetic
-3. Archive an account — hidden from pickers, history intact
-4. `npm test` passes
-
----
-
 ## Chunk 4 — Categories
 
 **Depends on: Chunk 2 (data layer — shipped).**

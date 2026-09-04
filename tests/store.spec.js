@@ -3,7 +3,7 @@ const { openApp, readJson } = require('./helpers');
 
 test.describe('store', () => {
   test('an upsert writes localStorage synchronously', async ({ page }) => {
-    await openApp(page);
+    await openApp(page, { signedIn: false });
     const written = await page.evaluate(() => {
       Store.upsert('accounts', { id: 'a1', name: 'Bank' });
       // Read back in the same tick — persistence must not be deferred.
@@ -68,7 +68,7 @@ test.describe('store', () => {
   });
 
   test('a corrupt cache falls back to empty instead of throwing', async ({ page }) => {
-    await openApp(page, { storage: { cache: 'not json{{{' } });
+    await openApp(page, { signedIn: false, storage: { cache: 'not json{{{' } });
     await expect(page.locator('body[data-booted="1"]')).toBeAttached();
     const out = await page.evaluate(() => ({ accounts: Store.all('accounts').length, tables: TABLES.length }));
     expect(out.accounts).toBe(0);
@@ -112,7 +112,7 @@ test.describe('store', () => {
   });
 
   test('a throwing subscriber does not break the mutation', async ({ page }) => {
-    await openApp(page);
+    await openApp(page, { signedIn: false });
     const rows = await page.evaluate(() => {
       Store.subscribe(() => {
         throw new Error('listener exploded');

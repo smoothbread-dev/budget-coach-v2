@@ -5,6 +5,44 @@ Shipped chunks, newest first. Entries are moved here from `FUTURE-ENHANCEMENTS.m
 
 ---
 
+## Chunk 3 — Accounts
+
+**Shipped:** 2026-09-05 · **Tests:** 172 passing (86 × chromium + mobile)
+
+Account management: create, rename, archive, with types (Cash, Bank, E-Wallet, Credit Card,
+Loan). Running balance derived from transactions, never stored. Three default accounts (Cash,
+Bank, E-Wallet) seeded on first run so the app is usable immediately.
+
+Pure money maths lives in `calc.js`, which is tested directly via `page.evaluate()` — cheapest
+and highest-value coverage in the project. Screen modules follow an IIFE pattern with `init()`
+and `render()`, wired from `main.js`.
+
+| File | Change |
+|---|---|
+| `js/calc.js` | New — `accountBalance()` |
+| `js/screens/accounts.js` | New — list, create, rename, archive, restore, toggle archived |
+| `css/screens.css` | New — screen nav, account rows, modal form |
+| `index.html` | Accounts screen, home nav with Accounts button, script tags |
+| `js/main.js` | `seedDefaults()`, `AccountsScreen.init()`, router wiring, home nav handler |
+| `tests/calc.spec.js` | New — 9 tests for `accountBalance()` |
+| `tests/accounts.spec.js` | New — 12 tests for account CRUD, seeding, balances |
+| `tests/store.spec.js` | 3 tests set to `signedIn: false` to isolate from account seeding |
+
+**Tests added:** `calc.spec.js` (unknown account returns 0, opening balance, income/expense,
+transfer_in/out, combined operations, ignores other accounts, uses `amount` not `own_share`,
+missing opening_balance defaults to 0), `accounts.spec.js` (seeded accounts appear and aren't
+duplicated, correct types, create via modal, rename, archive hides but transactions survive,
+toggle show archived, balance with all transaction types, balance unaffected by `own_share`,
+screen displays balance, opening balance persists, restore archived).
+
+**Deviations from plan:** "deleting an account with transactions is refused" was replaced by
+archive semantics — accounts are soft-deleted (archived) rather than hard-deleted, so
+transactions always survive. Seeding required `{ queue: false }` to avoid polluting the dirty
+queue, plus a re-seed after hydration since `Store.merge()` wipes non-dirty rows. Seeding is
+gated on `Auth.isSignedIn()` so store-mechanics tests run without interference.
+
+---
+
 ## Chunk 2 — Data layer
 
 **Shipped:** 2026-09-05 · **Tests:** 126 passing (63 × chromium + mobile)

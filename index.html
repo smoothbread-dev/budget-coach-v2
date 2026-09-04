@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/screens.css" />
 </head>
 <body>
   <div id="app">
@@ -45,6 +46,10 @@
         <h1>Budget Coach</h1>
         <p class="muted" id="home-email"></p>
 
+        <nav class="screen-nav" id="home-nav">
+          <button class="btn" type="button" data-screen="accounts-screen">Accounts</button>
+        </nav>
+
         <div class="card">
           <h2>Your data</h2>
           <ul class="stack-list" id="home-counts"></ul>
@@ -56,6 +61,20 @@
         </div>
 
         <button class="btn" id="sign-out" type="button">Sign out</button>
+      </section>
+
+      <!-- ══ ACCOUNTS ═══════════════════════════════════════ -->
+      <section class="screen" id="accounts-screen">
+        <h1>Accounts</h1>
+        <button class="btn btn-link" type="button" onclick="Router.show('home-screen')">&larr; Back</button>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2>Your accounts</h2>
+            <button class="btn btn-primary" id="accounts-add" type="button">Add</button>
+          </div>
+          <ul id="accounts-list"></ul>
+        </div>
+        <button class="btn btn-link" id="accounts-toggle-archived" type="button" hidden>Show archived</button>
       </section>
     </main>
   </div>
@@ -69,7 +88,9 @@
   <script src="./js/store.js"></script>
   <script src="./js/auth.js"></script>
   <script src="./js/sync.js"></script>
+  <script src="./js/calc.js"></script>
   <script src="./js/router.js"></script>
+  <script src="./js/screens/accounts.js"></script>
   <script src="./js/main.js"></script>
 </body>
 </html>

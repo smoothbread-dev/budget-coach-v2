@@ -6,7 +6,7 @@ A payday planner with a built-in expense ledger.
 
 Not a record of what you spent — a live answer to *"can I spend this right now?"*
 
-**Status:** in development. Chunks 1–2 of 25 shipped — the local-first data layer is in place.
+**Status:** in development. Chunks 1–3 of 25 shipped — accounts with running balances are in place.
 See [FUTURE-ENHANCEMENTS.md](FUTURE-ENHANCEMENTS.md) for what's next and
 [ENHANCED-LOG.md](ENHANCED-LOG.md) for what's done.
 

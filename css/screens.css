@@ -1,0 +1,66 @@
+/* Screen-level navigation */
+.screen-nav {
+  display: flex;
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+  flex-wrap: wrap;
+}
+.screen-nav .btn {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+/* ── Accounts ──────────────────────────────────── */
+
+#accounts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.account-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  gap: var(--gap);
+}
+.account-row:last-child { border-bottom: none; }
+
+.account-archived { opacity: 0.5; }
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.account-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-type { font-size: 0.8125rem; }
+
+.account-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.account-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.account-actions .btn-link { font-size: 0.8125rem; }
+.btn-link-danger { color: var(--danger); }
+
+.modal-form .field { margin-bottom: var(--gap); }
+.modal-form .field:last-child { margin-bottom: 0; }
+.modal-form select.input {
+  appearance: auto;
+}
