@@ -6,100 +6,7 @@ use the `/ship-chunk` prompt.
 Chunks are ordered by dependency. Each one can be built, tested and shipped on its own.
 
 **Phases:** A = ledger · B = shared expenses · **cutover from Money Manager** · C = planner ·
-D = the bridge · E = later.
-
----
-
-## Chunk 4 — Categories
-
-**Depends on: Chunk 2 (data layer — shipped).**
-
-User-owned categories with one level of subcategories, each marked Fixed or Variable.
-
-### Behaviour
-
-- Create, rename, archive, reorder. One level of nesting only.
-- **Budgets sit on leaves.** A parent's total is the sum of its children; parents have no cap.
-- **Fixed** (rent, wifi) vs **Variable** (food) — Fixed is excluded from daily pacing in Chunk 18.
-- Seeded on first run: Food (variable), Rent, Therapy, Wifi, Mobile Data (fixed).
-- Archiving a parent archives its children.
-
-### Files
-
-| File | Change |
-|---|---|
-| `js/screens/categories.js` | New |
-| `js/calc.js` | `categoryTree()`, `leafCategories()` |
-| `index.html` | Categories screen |
-| `tests/categories.spec.js` | New |
-
-### Spec coverage
-
-- Seeded categories appear once, with the right Fixed/Variable split
-- Create a subcategory; the parent shows it nested
-- A parent with children exposes no budget field of its own
-- Archiving a parent archives its children
-- Nesting is capped at one level
-
-### Verification
-
-1. Fresh account → five seeded categories with correct kinds
-2. Add Groceries and Eating Out under Food — Food shows no budget field
-3. Archive Food — both children disappear from pickers
-4. `npm test` passes
-
----
-
-## Chunk 5 — Quick-add
-
-**Depends on: Chunks 3, 4.**
-
-The most-used screen in the app: roughly 200 entries a month against one payday plan. Everything
-else bends to its speed.
-
-### Hard requirement
-
-**≤ 3 taps and ≤ 5 seconds for a typical expense.** This is asserted by a test, not assumed.
-Amount → category chip → save. The account defaults to the last one used.
-
-### Behaviour
-
-- Numeric keypad is focused on open; no form-field hunting.
-- Category chips ordered by recency then frequency; full list behind a search field.
-- Account defaults to last used, changeable in one tap.
-- Optional note, collapsed by default.
-- Income uses the same flow with the sign flipped.
-- **Category is mandatory** — no Miscellaneous fallback.
-- Writes locally and closes immediately; the Supabase push happens in the background.
-- `own_share` equals `amount` here. Splits arrive in Chunk 12.
-
-### Files
-
-| File | Change |
-|---|---|
-| `js/screens/quickadd.js` | New |
-| `js/store.js` | `addTransaction()` |
-| `index.html` | Quick-add sheet, keypad, chip row |
-| `css/components.css` | Keypad, chips |
-| `tests/quickadd.spec.js` | New |
-
-### Spec coverage
-
-- **Expense logged in 3 taps** (amount, category chip, save)
-- Save-to-close completes under the perf budget
-- Chips are ordered by recency, then frequency
-- Account defaults to the last used and is overridable
-- Save is refused with no category
-- Entry appears in the cache before any network response
-- Income increases the balance; expense decreases it
-
-### Verification
-
-1. Open quick-add — keypad focused, chips visible
-2. Log RM12 Food in three taps
-3. Kill the network, log another — it still saves and syncs later
-4. Try to save without a category — blocked with a clear message
-5. `npm test` passes
+D = the bridge · E = later · UI = mobile polish (can ship at any time).
 
 ---
 
@@ -626,3 +533,116 @@ history gets long enough to hurt.
 
 Malaysian hire purchase early settlement uses the Rule of 78 to rebate unearned interest.
 Would let the app answer "what if I paid the car off now?".
+
+---
+
+## Chunk 26 — Mobile UI/UX overhaul
+
+**Depends on: Chunk 3 (accounts — shipped). Can be built at any time.**
+
+The app currently looks and feels like a desktop web page scaled down. This chunk applies
+mobile-native patterns so it feels like a real phone app. Purely CSS/HTML/JS — no new data
+or business logic.
+
+### 1. Bottom navigation bar (highest impact)
+
+Replace the inline `<nav class="screen-nav">` with a fixed bottom tab bar.
+
+- `position: fixed; bottom: 0` bar, always visible, always one-thumb reachable.
+- Icons + short labels (Home, Accounts — and later: Budget, Ledger, etc.).
+- Active tab highlighted with `--accent`.
+- `padding-bottom` on `#app` so content does not hide behind the bar.
+- Safe-area inset for notched phones: `padding-bottom: env(safe-area-inset-bottom)`.
+
+### 2. Sticky top header with back navigation
+
+Pin the screen title instead of letting it scroll away.
+
+- `position: sticky; top: 0; z-index: 10` header bar per screen.
+- Screen title left-aligned, action buttons (e.g. "Add") right-aligned in the header.
+- Back button as a `←` icon in the top-left, not an underlined text link below the title.
+
+### 3. Bottom-sheet modals
+
+Modals currently centre on screen — a desktop pattern. Slide them up from the bottom.
+
+- Change `.modal-overlay` from `align-items: center` to `align-items: flex-end`.
+- `border-radius` only on the top corners.
+- Animate with `transform: translateY(100%)` → `translateY(0)`.
+- Drag-handle pill at the top (`40px × 4px` rounded bar).
+
+### 4. Full-width edge-to-edge cards
+
+Cards have border + radius + margin, which reads as floating desktop panels.
+
+- Remove horizontal margin so cards stretch edge-to-edge (8px side padding max).
+- Dividers between sections instead of card borders.
+- Reduce or remove `border-radius` on full-width cards for a flatter, app-like feel.
+
+### 5. Touch-friendly list items
+
+Account rows use `padding: 10px 0` and small text-link actions — tight for a thumb.
+
+- Increase `.account-row` padding to at least `14px 0`.
+- Make the entire row tappable, not just tiny "Rename" / "Archive" links.
+- Move destructive actions behind swipe-to-reveal or a long-press menu, or at minimum
+  use icon buttons instead of underlined text.
+
+### 6. Pull-to-refresh
+
+Replace the static "All changes saved" text with an overscroll-based pull-to-refresh
+that triggers `Sync.hydrate()`. Show a spinner at the top while syncing.
+
+### 7. Auth screen polish
+
+- Centre the form vertically: `min-height: 100dvh; display: flex; align-items: center`.
+- Full-width sign-in button (`width: 100%`).
+- Stack "Forgot password" and "Sign up" vertically instead of the `justify-content: flex-end`
+  row — easier to tap on a narrow screen.
+
+### 8. Typography and spacing
+
+- Reduce `h1` on screens to ~`1.25rem` — large desktop headings waste vertical space.
+- More vertical rhythm: `gap: 16px` between major sections rather than uniform `12px`.
+- Lighter section labels (`font-weight: 500` instead of bold `h2`).
+
+### 9. Micro-interactions
+
+- `transition: background 0.15s` on buttons and list rows for tap feedback.
+- Active state: `btn:active { transform: scale(0.97) }` for tactile press feel.
+- Toast slides up from the bottom, not just appearing.
+
+### 10. PWA integration (see also Chunk 6)
+
+- `apple-mobile-web-app-capable` meta tag to hide browser chrome when installed.
+- Chunk 6 handles the manifest and service worker; this chunk handles the visual
+  "feels installed" polish that sits on top of it.
+
+### Files
+
+| File | Change |
+|---|---|
+| `css/base.css` | Sticky header, safe-area padding |
+| `css/components.css` | Bottom-sheet modal, button transitions, toast animation, full-width cards |
+| `css/screens.css` | Bottom nav bar, touch-friendly rows, auth vertical centering |
+| `index.html` | Bottom nav markup, header bar restructure |
+| `js/ui.js` | Pull-to-refresh, bottom-sheet animation |
+| `js/router.js` | Active-tab highlighting in bottom nav |
+
+### Spec coverage
+
+- Bottom nav is visible and has the correct active tab on each screen
+- Tapping a nav tab switches the screen
+- Modal opens as a bottom sheet (positioned at the bottom of the viewport)
+- Pull-to-refresh triggers sync
+- All tap targets remain ≥ 44px
+- Safe-area inset is applied on the bottom nav
+
+### Verification
+
+1. Open on a phone — bottom nav is visible, thumb-reachable
+2. Navigate between screens — active tab updates
+3. Open a modal — slides up from the bottom
+4. Scroll a long list — header stays pinned, bottom nav stays visible
+5. Pull down on home — sync fires
+6. `npm test` passes

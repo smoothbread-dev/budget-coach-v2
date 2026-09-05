@@ -112,3 +112,145 @@ test.describe('calc — accountBalance', () => {
     expect(result).toBe(5000);
   });
 });
+
+test.describe('calc — categoryTree', () => {
+  test('groups children under their parent', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'p1', name: 'Food', kind: 'variable', parent_id: null },
+        { id: 'c1', name: 'Groceries', kind: 'variable', parent_id: 'p1' },
+        { id: 'c2', name: 'Eating out', kind: 'variable', parent_id: 'p1' },
+      ];
+      const tree = categoryTree(cats);
+      return { roots: tree.length, children: tree[0].children.length, names: tree[0].children.map(c => c.name).sort() };
+    });
+    expect(result.roots).toBe(1);
+    expect(result.children).toBe(2);
+    expect(result.names).toEqual(['Eating out', 'Groceries']);
+  });
+
+  test('top-level with no children has empty children array', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [{ id: 'p1', name: 'Rent', kind: 'fixed', parent_id: null }];
+      return categoryTree(cats)[0].children;
+    });
+    expect(result).toEqual([]);
+  });
+
+  test('orphaned parent_id is treated as top-level', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'c1', name: 'Orphan', kind: 'variable', parent_id: 'gone' },
+        { id: 'p1', name: 'Food', kind: 'variable', parent_id: null },
+      ];
+      return categoryTree(cats).map(n => n.name).sort();
+    });
+    expect(result).toEqual(['Food', 'Orphan']);
+  });
+
+  test('roots are sorted by name', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: '1', name: 'Wifi', kind: 'fixed', parent_id: null },
+        { id: '2', name: 'Food', kind: 'variable', parent_id: null },
+        { id: '3', name: 'Rent', kind: 'fixed', parent_id: null },
+      ];
+      return categoryTree(cats).map(n => n.name);
+    });
+    expect(result).toEqual(['Food', 'Rent', 'Wifi']);
+  });
+});
+
+test.describe('calc — leafCategories', () => {
+  test('returns categories with no children', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'p1', name: 'Food', kind: 'variable', parent_id: null },
+        { id: 'c1', name: 'Groceries', kind: 'variable', parent_id: 'p1' },
+        { id: 'p2', name: 'Rent', kind: 'fixed', parent_id: null },
+      ];
+      return leafCategories(cats).map(c => c.name).sort();
+    });
+    expect(result).toEqual(['Groceries', 'Rent']);
+  });
+
+  test('a parent with children is excluded', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'p1', name: 'Food', parent_id: null },
+        { id: 'c1', name: 'Groceries', parent_id: 'p1' },
+      ];
+      return leafCategories(cats).map(c => c.name);
+    });
+    expect(result).toEqual(['Groceries']);
+  });
+});
+
+test.describe('calc — categoryChipOrder', () => {
+  test('recently used categories appear first', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'c1', name: 'Food', parent_id: null },
+        { id: 'c2', name: 'Rent', parent_id: null },
+        { id: 'c3', name: 'Wifi', parent_id: null },
+      ];
+      const txns = [
+        { category_id: 'c2', date: '2026-09-01' },
+        { category_id: 'c1', date: '2026-09-03' },
+      ];
+      return categoryChipOrder(cats, txns).map(c => c.name);
+    });
+    expect(result[0]).toBe('Food');
+    expect(result[1]).toBe('Rent');
+  });
+
+  test('higher frequency breaks ties when recency is equal', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'c1', name: 'Alpha', parent_id: null },
+        { id: 'c2', name: 'Beta', parent_id: null },
+      ];
+      const txns = [
+        { category_id: 'c1', date: '2026-09-01' },
+        { category_id: 'c2', date: '2026-09-01' },
+        { category_id: 'c2', date: '2026-09-01' },
+      ];
+      return categoryChipOrder(cats, txns).map(c => c.name);
+    });
+    expect(result[0]).toBe('Beta');
+    expect(result[1]).toBe('Alpha');
+  });
+
+  test('never-used categories appear last, alphabetically', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'c1', name: 'Wifi', parent_id: null },
+        { id: 'c2', name: 'Food', parent_id: null },
+        { id: 'c3', name: 'Rent', parent_id: null },
+      ];
+      return categoryChipOrder(cats, []).map(c => c.name);
+    });
+    expect(result).toEqual(['Food', 'Rent', 'Wifi']);
+  });
+
+  test('archived categories are excluded', async ({ page }) => {
+    await openApp(page);
+    const result = await page.evaluate(() => {
+      const cats = [
+        { id: 'c1', name: 'Food', parent_id: null, archived: false },
+        { id: 'c2', name: 'Old', parent_id: null, archived: true },
+      ];
+      return categoryChipOrder(cats, []).map(c => c.name);
+    });
+    expect(result).toEqual(['Food']);
+  });
+});

@@ -59,6 +59,106 @@
 .account-actions .btn-link { font-size: 0.8125rem; }
 .btn-link-danger { color: var(--danger); }
 
+/* ── Categories ───────────────────────────────── */
+
+#categories-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.category-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  gap: var(--gap);
+}
+.category-row:last-child { border-bottom: none; }
+
+.category-child { padding-left: 24px; }
+.category-archived { opacity: 0.5; }
+
+.category-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.category-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.category-kind { font-size: 0.8125rem; }
+.category-parent-label { font-size: 0.75rem; font-style: italic; }
+
+.category-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.category-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.category-actions .btn-link { font-size: 0.8125rem; }
+
+/* ── Quick-add ────────────────────────────────── */
+
+.quickadd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gap);
+}
+
+#quickadd-type-row {
+  display: flex;
+  gap: 4px;
+}
+#quickadd-type-row .btn {
+  min-width: 80px;
+  text-align: center;
+}
+
+#quickadd-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 16px 0;
+}
+
+#quickadd-account-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+#quickadd-account-row label {
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+#quickadd-account-row .input {
+  flex: 1;
+  appearance: auto;
+}
+
+#quickadd-note-row {
+  margin-bottom: var(--gap);
+}
+
+.quickadd-save {
+  width: 100%;
+}
+
+/* ── Shared modal form ────────────────────────── */
+
 .modal-form .field { margin-bottom: var(--gap); }
 .modal-form .field:last-child { margin-bottom: 0; }
 .modal-form select.input {

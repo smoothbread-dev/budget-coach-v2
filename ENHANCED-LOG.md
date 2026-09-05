@@ -5,6 +5,81 @@ Shipped chunks, newest first. Entries are moved here from `FUTURE-ENHANCEMENTS.m
 
 ---
 
+## Chunk 5 — Quick-add
+
+**Shipped:** 2026-09-05 · **Tests:** 240 passing (120 × chromium + mobile)
+
+The most-used screen in the app. Hard requirement: **≤ 3 taps and ≤ 5 seconds** for a typical
+expense, asserted by tests. Flow: Amount → category chip → save. Custom numeric keypad (4×3 grid:
+1–9, `.`, 0, `⌫`) avoids native keyboard. Category chips ordered by recency then frequency via
+`categoryChipOrder()`. Account defaults to last used (stored in `bcv2_last_account`). Optional
+note, collapsed by default. `own_share = amount` until splits arrive in Chunk 12.
+
+| File | Change |
+|---|---|
+| `js/calc.js` | `categoryChipOrder()` — sorts leaf categories by recency, frequency, then name |
+| `js/screens/quickadd.js` | New — IIFE with custom keypad, category chips, type toggle, save |
+| `css/components.css` | Keypad grid, chip row, chip selection styles |
+| `css/screens.css` | Quick-add layout: type toggle, amount display, account row, note row, save |
+| `index.html` | Quick-add screen markup, home "Add entry" button, script tag |
+| `js/main.js` | `QuickAddScreen.init()`, home-quickadd click handler |
+| `tests/quickadd.spec.js` | New — 11 tests for quick-add flow |
+| `tests/calc.spec.js` | 4 new tests for `categoryChipOrder()` |
+
+**Tests added:** `quickadd.spec.js` (expense logged in 3 taps, save-to-close under 5 seconds,
+chips ordered by recency then frequency, account defaults to last used and is overridable, save
+refused with no category, save refused with zero amount, entry appears in store before network
+response, income increases balance / expense decreases it, note field hidden by default / toggles
+visible, note saved with transaction, navigates back to home on save), `calc.spec.js` (recently
+used categories appear first, higher frequency breaks ties when recency is equal, never-used
+categories appear last alphabetically, archived categories are excluded).
+
+**Deviations from plan:** `Store.upsert('transactions', ...)` is used directly instead of adding
+an `addTransaction()` helper to `store.js` — the generic upsert path is sufficient. Tests required
+passing `tables` alongside `cache` in the seed helper to prevent `hydrateInBackground()` from
+wiping cached data via `merge()` with empty server responses.
+
+---
+
+## Chunk 4 — Categories
+
+**Shipped:** 2026-09-05 · **Tests:** 210 passing (105 × chromium + mobile)
+
+User-owned categories with one level of subcategories, each marked Fixed or Variable.
+`categoryTree()` and `leafCategories()` are pure functions in `calc.js`, tested directly via
+`page.evaluate()`. The categories screen follows the same IIFE pattern as accounts: `init()` /
+`render()`, wired from `main.js`.
+
+Key behaviours: create with optional parent (enforcing one-level nesting), rename, archive
+(cascading to children), restore (cascading to parent). Subcategories inherit `kind` from their
+parent — the kind field is hidden when a parent is selected. Five categories seeded on first run:
+Food (variable), Rent, Therapy, Wifi, Mobile Data (fixed).
+
+| File | Change |
+|---|---|
+| `js/calc.js` | `categoryTree()`, `leafCategories()` |
+| `js/screens/categories.js` | New — list, create, rename, archive, restore, toggle archived |
+| `css/screens.css` | Category rows, child indentation, parent label |
+| `index.html` | Categories screen, home nav with Categories button |
+| `js/main.js` | Category seeding in `seedDefaults()`, `CategoriesScreen.init()`, router wiring |
+| `tests/calc.spec.js` | 6 new tests for `categoryTree()` and `leafCategories()` |
+| `tests/categories.spec.js` | New — 13 tests for category CRUD, seeding, nesting |
+
+**Tests added:** `calc.spec.js` (groups children under parents, empty children array for
+top-level, orphaned parent_id treated as top-level, roots sorted by name, leafCategories returns
+leaves, parent with children excluded from leaves), `categories.spec.js` (seeded categories
+appear with correct count, not duplicated on reload, correct kinds, create new category, create
+subcategory nested under parent, subcategory inherits kind from parent, rename, archive hides
+from list, archiving parent archives children, toggle show archived, restore archived, nesting
+capped at one level, parent with children shows Parent label).
+
+**Deviations from plan:** restoring a child also restores its archived parent (not in the
+original spec, but necessary for consistency). The "parent with children exposes no budget field"
+spec item was deferred to Chunk 15 (monthly budgets) since budget fields don't exist yet —
+replaced with a "parent shows Parent label" test.
+
+---
+
 ## Chunk 3 — Accounts
 
 **Shipped:** 2026-09-05 · **Tests:** 172 passing (86 × chromium + mobile)

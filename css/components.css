@@ -101,6 +101,43 @@
 .toast-error { border-color: var(--danger); }
 .toast-success { border-color: var(--accent-dim); }
 
+/* Keypad */
+#quickadd-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: var(--gap);
+}
+.keypad-btn {
+  min-height: 52px;
+  font-size: 1.25rem;
+}
+
+/* Chips */
+#quickadd-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+}
+.chip {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  white-space: nowrap;
+  min-height: var(--tap-target);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+}
+.chip.selected {
+  background: var(--accent-dim);
+  color: #06210f;
+  border-color: var(--accent-dim);
+}
+
 @media (max-width: 360px) {
   :root { --pad: 12px; --gap: 10px; }
 }

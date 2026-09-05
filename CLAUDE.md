@@ -42,13 +42,14 @@ payment is the expense).
 | `css/base.css` | Resets, screen routing, focus states. |
 | `js/config.js` | Constants. No logic, no DOM. |
 | `js/util.js` | Pure helpers: ids, dates, money formatting and parsing. |
-| `js/calc.js` | **Pure** money maths. No DOM, no state, no I/O. |
+| `js/calc.js` | **Pure** money maths: `accountBalance`, `categoryTree`, `leafCategories`, `categoryChipOrder`. No DOM, no state, no I/O. |
 | `js/store.js` | In-memory state + localStorage cache + dirty queue. |
 | `js/sync.js` | The only file that talks to Supabase. |
 | `js/auth.js` | Sign in/up/out, password reset, session persistence. |
 | `js/router.js` | `.screen`/`.active` routing, hash-based. |
 | `js/ui.js` | `escapeHtml`, `el`, modal, toast, chips. |
 | `js/main.js` | Boot order and top-level wiring. |
+| `js/screens/quickadd.js` | Quick-add entry: custom keypad, category chips, type toggle, save. |
 | `js/screens/*.js` | One screen each: `init()` / `render()`. |
 | `tests/` | Playwright suite, static server, helpers. |
 

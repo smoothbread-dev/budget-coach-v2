@@ -89,6 +89,18 @@ function seedDefaults() {
       }, { queue: false });
     });
   }
+
+  if (Store.all('categories').length === 0) {
+    SEED_CATEGORIES.forEach(function (seed) {
+      Store.upsert('categories', {
+        name: seed.name,
+        kind: seed.kind,
+        parent_id: null,
+        archived: false,
+        sort: 0,
+      }, { queue: false });
+    });
+  }
 }
 
 function renderShell() {
@@ -150,8 +162,11 @@ async function boot() {
   });
 
   AccountsScreen.init();
+  CategoriesScreen.init();
+  QuickAddScreen.init();
   Router.onChange(function (id) {
     if (id === 'accounts-screen') AccountsScreen.render();
+    if (id === 'categories-screen') CategoriesScreen.render();
   });
 
   document.getElementById('auth-form').addEventListener('submit', submitAuth);
@@ -178,6 +193,10 @@ async function boot() {
   document.getElementById('home-nav').addEventListener('click', (e) => {
     const target = e.target.closest('[data-screen]');
     if (target) Router.show(target.dataset.screen);
+  });
+
+  document.getElementById('home-quickadd').addEventListener('click', () => {
+    QuickAddScreen.open('expense');
   });
 
   setAuthMode('signin');

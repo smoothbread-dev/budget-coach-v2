@@ -46,8 +46,11 @@
         <h1>Budget Coach</h1>
         <p class="muted" id="home-email"></p>
 
+        <button class="btn btn-primary" id="home-quickadd" type="button">+ Add entry</button>
+
         <nav class="screen-nav" id="home-nav">
           <button class="btn" type="button" data-screen="accounts-screen">Accounts</button>
+          <button class="btn" type="button" data-screen="categories-screen">Categories</button>
         </nav>
 
         <div class="card">
@@ -76,6 +79,64 @@
         </div>
         <button class="btn btn-link" id="accounts-toggle-archived" type="button" hidden>Show archived</button>
       </section>
+
+      <!-- ══ QUICK-ADD ════════════════════════════════════ -->
+      <section class="screen" id="quickadd-screen">
+        <div class="quickadd-header">
+          <button class="btn btn-link" id="quickadd-back" type="button">&larr; Back</button>
+          <div id="quickadd-type-row">
+            <button class="btn btn-primary" id="quickadd-type-expense" type="button">Expense</button>
+            <button class="btn" id="quickadd-type-income" type="button">Income</button>
+          </div>
+        </div>
+
+        <div id="quickadd-amount">RM 0.00</div>
+
+        <p class="error-text" id="quickadd-error" hidden></p>
+
+        <div id="quickadd-chips"></div>
+
+        <div id="quickadd-account-row">
+          <label for="quickadd-account">Account</label>
+          <select class="input" id="quickadd-account"></select>
+        </div>
+
+        <div id="quickadd-note-row" hidden>
+          <input class="input" id="quickadd-note" type="text" placeholder="Note (optional)" />
+        </div>
+        <button class="btn btn-link" id="quickadd-note-toggle" type="button">Add note</button>
+
+        <div id="quickadd-keypad">
+          <button class="keypad-btn btn" type="button" data-key="1">1</button>
+          <button class="keypad-btn btn" type="button" data-key="2">2</button>
+          <button class="keypad-btn btn" type="button" data-key="3">3</button>
+          <button class="keypad-btn btn" type="button" data-key="4">4</button>
+          <button class="keypad-btn btn" type="button" data-key="5">5</button>
+          <button class="keypad-btn btn" type="button" data-key="6">6</button>
+          <button class="keypad-btn btn" type="button" data-key="7">7</button>
+          <button class="keypad-btn btn" type="button" data-key="8">8</button>
+          <button class="keypad-btn btn" type="button" data-key="9">9</button>
+          <button class="keypad-btn btn" type="button" data-key=".">.</button>
+          <button class="keypad-btn btn" type="button" data-key="0">0</button>
+          <button class="keypad-btn btn" type="button" data-key="backspace" aria-label="Backspace">&#9003;</button>
+        </div>
+
+        <button class="btn btn-primary quickadd-save" id="quickadd-save" type="button">Save</button>
+      </section>
+
+      <!-- ══ CATEGORIES ═════════════════════════════════ -->
+      <section class="screen" id="categories-screen">
+        <h1>Categories</h1>
+        <button class="btn btn-link" type="button" onclick="Router.show('home-screen')">&larr; Back</button>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2>Your categories</h2>
+            <button class="btn btn-primary" id="categories-add" type="button">Add</button>
+          </div>
+          <ul id="categories-list"></ul>
+        </div>
+        <button class="btn btn-link" id="categories-toggle-archived" type="button" hidden>Show archived</button>
+      </section>
     </main>
   </div>
 
@@ -91,6 +152,8 @@
   <script src="./js/calc.js"></script>
   <script src="./js/router.js"></script>
   <script src="./js/screens/accounts.js"></script>
+  <script src="./js/screens/categories.js"></script>
+  <script src="./js/screens/quickadd.js"></script>
   <script src="./js/main.js"></script>
 </body>
 </html>
