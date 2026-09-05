@@ -6,7 +6,7 @@ A payday planner with a built-in expense ledger.
 
 Not a record of what you spent — a live answer to *"can I spend this right now?"*
 
-**Status:** in development. Chunks 1–5 of 26 shipped — quick-add expense/income entry is live.
+**Status:** in development. Chunks 1–6 of 26 shipped — installable PWA with offline support.
 See [FUTURE-ENHANCEMENTS.md](FUTURE-ENHANCEMENTS.md) for what's next and
 [ENHANCED-LOG.md](ENHANCED-LOG.md) for what's done.
 

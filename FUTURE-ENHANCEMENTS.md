@@ -10,44 +10,6 @@ D = the bridge · E = later · UI = mobile polish (can ship at any time).
 
 ---
 
-## Chunk 6 — PWA
-
-**Depends on: Chunk 2 (data layer — shipped).**
-
-Installable to the phone home screen so daily logging can become a habit before the rest of the
-app exists.
-
-### Implementation
-
-- `manifest.json` — standalone display, dark theme, 192/512 icons.
-- `sw.js` — app shell cached on install; **network-first for local files** so no cache busting is
-  needed on deploy. **Never cache Supabase requests** — stale financial data is worse than none.
-- Register with `navigator.serviceWorker.register('./sw.js').catch(() => {})`.
-
-### Files
-
-| File | Change |
-|---|---|
-| `manifest.json`, `sw.js`, `icons/` | New |
-| `index.html` | Manifest link, theme-color, SW registration |
-| `tests/pwa.spec.js` | New |
-
-### Spec coverage
-
-- Manifest is served and valid
-- Service worker registers
-- App shell loads from cache when offline
-- Supabase requests are never served from cache
-
-### Verification
-
-1. Install to home screen — opens without browser chrome
-2. Go offline and relaunch — the app shell still loads
-3. Lighthouse: installable, Accessibility ≥ 95
-4. `npm test` passes
-
----
-
 ## Chunk 7 — Transfers and the `own_share` rule
 
 **Depends on: Chunk 5.**

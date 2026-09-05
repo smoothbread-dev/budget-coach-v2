@@ -37,7 +37,10 @@ payment is the expense).
 
 | Path | Contains |
 |---|---|
-| `index.html` | Markup only. No inline styles. |
+| `index.html` | Markup only. No inline styles. SW registration inline script. |
+| `manifest.json` | PWA manifest: standalone display, dark theme, icon refs. |
+| `sw.js` | Service worker: network-first cache, Supabase bypass. |
+| `icons/` | PWA icons: 192×192 and 512×512 PNGs. |
 | `css/tokens.css` | Custom properties. All colour/spacing lives here. |
 | `css/base.css` | Resets, screen routing, focus states. |
 | `js/config.js` | Constants. No logic, no DOM. |

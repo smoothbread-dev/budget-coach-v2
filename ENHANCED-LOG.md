@@ -5,6 +5,35 @@ Shipped chunks, newest first. Entries are moved here from `FUTURE-ENHANCEMENTS.m
 
 ---
 
+## Chunk 6 — PWA
+
+**Shipped:** 2026-09-05 · **Tests:** 248 passing (124 × chromium + mobile)
+
+Makes the app installable to the phone home screen and offline-capable. A service worker caches
+the app shell on install, using a **network-first** strategy so deploys take effect immediately
+without cache busting. **Supabase requests are never cached** — stale financial data is worse
+than none. `skipWaiting()` + `clients.claim()` ensure new SW versions activate immediately.
+
+| File | Change |
+|---|---|
+| `manifest.json` | New — standalone display, dark theme (#0f1115), 192/512 icons |
+| `sw.js` | New — network-first cache, Supabase bypass, shell precache on install |
+| `icons/icon-192.png` | New — 192×192 app icon (green circle on dark background) |
+| `icons/icon-512.png` | New — 512×512 app icon |
+| `index.html` | Manifest link, apple-touch-icon, inline SW registration script |
+| `tests/pwa.spec.js` | New — 4 tests for manifest, SW registration, offline, Supabase bypass |
+
+**Tests added:** `pwa.spec.js` (manifest served and valid with standalone display and correct
+theme colors, service worker registers and activates, app shell loads from cache when offline,
+Supabase requests are never present in the SW cache).
+
+**Deviations from plan:** none. The existing `<meta name="theme-color">` was already present from
+Chunk 1, so only the manifest link and apple-touch-icon were added. Icons are generated via a
+one-time Node.js script (`scripts/generate-icons.js`) — simple green circle on dark background,
+replaceable with branded icons later.
+
+---
+
 ## Chunk 5 — Quick-add
 
 **Shipped:** 2026-09-05 · **Tests:** 240 passing (120 × chromium + mobile)
